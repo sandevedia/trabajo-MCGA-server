@@ -1,67 +1,36 @@
 const express = require('express')
 const cors = require('cors')
 const bodyparser = require('body-parser')
+const mongoose = require('mongoose');
+const app = express()
 
 const myUser = {
   email: "santiagoalarcon@gmail.com",
   password: "123456"
 }
 
-const app =express()
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyparser.json())
 app.use(cors())
 
-app.get("/", (req, res) =>{
+app.get('/', (req, res) => {
   console.log(req.body);
-  res.status(200).send("server working")
+  res.status(200).send("<h1>server working</h1>")
 })
 
-app.post("/login", (req, res) => {
-  if(!req.body.email) {
+app.post('/login', (req, res) => {
+    if(req.body.email !== myUser.email) {
     return res.status(400).send({
-      success: false,
-      message: "Email is required",
+      error: true,
+      message: "El usuario no existe",
     })
   }
-  if(!req.body.password) {
+  if(req.body.password !== myUser.password) {
     return res.status(400).send({
-      success: false,
-      message: "Password is required",
+      error: true,
+      message: "Password incorrecto",
     })
   }
-
-  //modficacion para mostrar si el error es el user o el password
-  //no aplicable en produccion
-
-      if( req.body.email !== myUser.email  )
-      {
-        return res.status(401).send ({
-          success: false,
-          message: "User not exist",
-        })
-      }
-
-        if( req.body.password !== myUser.password    )
-        {
-        return res.status(401).send ({
-          success: false,
-          message: "wrong password  ",
-        })
-      }
-
-
-
-
-  /*if( req.body.email !== myUser.email  || req.body.password !== myUser.password  )
-  {
-    return res.status(401).send ({
-      success: false,
-      message: "User not exist",
-    })
-  }*/
-
-
-
 
   return res.status(200).send({
     success: true,
@@ -71,6 +40,6 @@ app.post("/login", (req, res) => {
 })
 
 
-app.listen(4000, () =>{
-  console.log("Server working on localhost")
+app.listen(process.env.PORT || 4000, () =>{
+  console.log("Server working...")
 })
